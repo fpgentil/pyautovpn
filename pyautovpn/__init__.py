@@ -1,4 +1,5 @@
-import commands, re
+import commands, re, pyotp, time
+from appscript import app
 
 def setup(password, token, vpn_name):
     user = commands.getstatusoutput("whoami")[-1]
@@ -19,3 +20,33 @@ def setup(password, token, vpn_name):
     commands.getstatusoutput("security -q add-generic-password -a {0} -s pyautovpn_name -w {1}".format(user, re.escape(vpn_name)))
 
     print("Password,token and VPN name were added/updated successfully")
+
+def connect():
+    password = commands.getstatusoutput("security -q find-generic-password -gl pyautovpn_pass | egrep '^password'")[-1]
+    token = commands.getstatusoutput("security -q find-generic-password -gl pyautovpn_token | egrep '^password'")[-1]
+    vpn_name = commands.getstatusoutput("security -q find-generic-password -gl pyautovpn_name | egrep '^password'")[-1]
+    if (
+    (re.search('password\:', password) == None) or
+    (re.search('password\:', token) == None) or
+    (re.search('password\:', vpn_name) == None)):
+        print("Passowrd, token or VPN name not found, use setup() first.")
+        return
+
+    password = password.replace("password: ", "")[1:-1]
+    token = token.replace("password: ", "")[1:-1]
+    vpn_name = vpn_name.replace("password: ", "")[1:-1]
+
+    already_connected = commands.getstatusoutput("scutil --nc status {0} | sed -n 1p".format(re.escape(vpn_name)))[-1]
+    if (already_connected == 'Connected'):
+        print("VPN already connected")
+        return
+
+    totp = pyotp.TOTP(token)
+    current_token = totp.now()
+    vpn_password = "{0}{1}".format(password, current_token)
+
+    commands.getstatusoutput("scutil --nc start {0}".format(re.escape(vpn_name)))
+    time.sleep(2)
+    app('System Events').keystroke(re.escape(vpn_password))
+    time.sleep(2)
+    app('System Events').keystroke('\r')

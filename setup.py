@@ -8,4 +8,5 @@ setup(name='pyautovpn',
       author_email='cdigentil@gmail.com',
       license='MIT',
       packages=['pyautovpn'],
+      install_requires=['pyotp','appscript'],
       zip_safe=False)
