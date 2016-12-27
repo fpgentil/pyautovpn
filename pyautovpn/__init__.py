@@ -17,10 +17,11 @@ def setup(password, token_path, vpn_name):
         commands.getstatusoutput("security -q delete-generic-password -a {0} -s pyautovpn_pass".format(user))
     commands.getstatusoutput("security -q add-generic-password -a {0} -s pyautovpn_pass -w {1}".format(user, re.escape(password)))
 
+    decoded_token = decode(token_path)
     keychain_token = commands.getstatusoutput("security -q find-generic-password -gl pyautovpn_token | egrep '^password'")[-1]
     if (re.search('password\:', keychain_token) != None):
         commands.getstatusoutput("security -q delete-generic-password -a {0} -s pyautovpn_token".format(user))
-    commands.getstatusoutput("security -q add-generic-password -a {0} -s pyautovpn_token -w {1}".format(user, re.escape(token)))
+    commands.getstatusoutput("security -q add-generic-password -a {0} -s pyautovpn_token -w {1}".format(user, re.escape(decoded_token)))
 
     keychain_name = commands.getstatusoutput("security -q find-generic-password -gl pyautovpn_name | egrep '^password'")[-1]
     if (re.search('password\:', keychain_name) != None):
