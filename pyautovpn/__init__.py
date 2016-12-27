@@ -1,7 +1,15 @@
 import commands, re, pyotp, time
 from appscript import app
 
-def setup(password, token, vpn_name):
+def decode(file_path):
+    from PIL import Image
+    import zbarlight
+    with open(file_path, 'rb') as image_file:
+        image = Image.open(image_file)
+        image.load()
+    return zbarlight.scan_codes('qrcode', image)[0]
+
+def setup(password, token_path, vpn_name):
     user = commands.getstatusoutput("whoami")[-1]
 
     keychain_pwd = commands.getstatusoutput("security -q find-generic-password -gl pyautovpn_pass | egrep '^password'")[-1]
