@@ -4,7 +4,21 @@ PyAutoVPN
 Automatic One-time Password VPN connector for OSX.
 
 ## Installation
-WIP
+* Make sure you have Zbar installed
+
+```
+$ brew install zbar
+```
+
+* Clone the project (since it's not published yet)
+
+```
+$ git clone https://github.com/fpgentil/pyautovpn
+$ cd pyautovpn
+$ pip install .
+
+```
+
 
 ## Usage
 WIP
