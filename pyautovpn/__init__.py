@@ -1,5 +1,5 @@
 import commands, re, pyotp, time
-from appscript import app
+from pynput.keyboard import Key, Controller
 
 def decode(file_path):
     from PIL import Image
@@ -56,6 +56,7 @@ def connect():
 
     commands.getstatusoutput("scutil --nc start {0}".format(re.escape(vpn_name)))
     time.sleep(2)
-    app('System Events').keystroke(re.escape(vpn_password))
-    time.sleep(2)
-    app('System Events').keystroke('\r')
+    keyboard = Controller()
+    for c in str(vpn_password):
+        keyboard.press(c)
+    keyboard.press(Key.enter)
